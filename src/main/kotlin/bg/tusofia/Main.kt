@@ -33,6 +33,8 @@ object ShamirSecretSharing {
             coefficients.add(BigInteger(prime.bitLength(), random).mod(prime))
         }
 
+        printPolynomial(coefficients)
+
         val shares = mutableListOf<Pair<BigInteger, BigInteger>>()
         for (i in 1..totalShares) {
             val x = BigInteger.valueOf(i.toLong())
@@ -40,6 +42,31 @@ object ShamirSecretSharing {
             shares.add(Pair(x, y))
         }
         return shares
+    }
+
+    fun printPolynomial(coefficients: List<BigInteger>) {
+        val polynomial = StringBuilder()
+        for (i in coefficients.indices) {
+            val coefficient = coefficients[i]
+            if (coefficient != BigInteger.ZERO) {
+                if (polynomial.isNotEmpty() && coefficient > BigInteger.ZERO) {
+                    polynomial.append(" + ")
+                } else if (coefficient < BigInteger.ZERO) {
+                    polynomial.append(" - ")
+                }
+                val absCoefficient = coefficient.abs()
+                if (i == 0 || absCoefficient != BigInteger.ONE) {
+                    polynomial.append(absCoefficient)
+                }
+                if (i > 0) {
+                    polynomial.append("x")
+                    if (i > 1) {
+                        polynomial.append("^$i")
+                    }
+                }
+            }
+        }
+        println("Polynomial: $polynomial")
     }
 
     /**
@@ -105,20 +132,21 @@ fun main() {
     val threshold = 3
 
     val partySecrets = listOf(
-        BigInteger("12345"), // Party 1's secret
-        BigInteger("67890"), // Party 2's secret
-        BigInteger("11111"), // Party 3's secret...
+        BigInteger("12345"),
+        BigInteger("67890"),
+        BigInteger("11111"),
         BigInteger("22222"),
         BigInteger("33333"),
     )
 
     println("Party Secrets: $partySecrets")
     println("Prime: $prime")
+    println()
 
     // Each party splits their secret into shares
     val allShares = partySecrets.mapIndexed { index, secret ->
-        val shares = ShamirSecretSharing.splitSecret(secret, totalShares, threshold, prime)
         println("Shares for Party ${index + 1}:")
+        val shares = ShamirSecretSharing.splitSecret(secret, totalShares, threshold, prime)
         shares.forEach { (x, y) -> println("x: $x, y: $y") }
         shares
     }
@@ -131,6 +159,7 @@ fun main() {
         }
     }
 
+    println()
     println("Exchanged Shares (after distribution):")
     exchangedShares.forEachIndexed { partyIndex, shares ->
         println("Party ${partyIndex + 1} now holds:")
@@ -144,6 +173,7 @@ fun main() {
         Pair(x, ySum)
     }
 
+    println()
     println("Local Sums:")
     localSums.forEach { println("x: ${it.first}, y: ${it.second}") }
 
@@ -152,6 +182,7 @@ fun main() {
 //    val subset = localSums.shuffled().take(4)
 //    val subset = localSums.shuffled().take(5)
 
+    println()
     val sumOfSecrets = ShamirSecretSharing.reconstructSecret(subset, prime)
     println("Sum of Secrets: $sumOfSecrets")
 
