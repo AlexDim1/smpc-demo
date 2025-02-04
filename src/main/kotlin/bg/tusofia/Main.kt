@@ -132,7 +132,7 @@ fun main() {
     val threshold = 3
 
     val partySecrets = listOf(
-        BigInteger("12345"),
+        BigInteger("-12345"),
         BigInteger("67890"),
         BigInteger("11111"),
         BigInteger("22222"),
@@ -152,7 +152,7 @@ fun main() {
     }
 
     // Each party gets one share from others
-    val exchangedShares = MutableList(partySecrets.size) { mutableListOf<Pair<BigInteger, BigInteger>>() }
+    val exchangedShares = List(totalShares) { mutableListOf<Pair<BigInteger, BigInteger>>() }
     for (shares in allShares) {
         for ((i, share) in shares.withIndex()) {
             exchangedShares[i % partySecrets.size].add(share)
